@@ -8,12 +8,12 @@ import { getAnalytics } from "firebase/analytics";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.local.FIREBASE_API_KEY,
-  authDomain: "flashcardsaas-bcc7d.firebaseapp.com",
-  projectId: "flashcardsaas-bcc7d",
-  storageBucket: "flashcardsaas-bcc7d.appspot.com",
-  messagingSenderId: "225163481418",
-  appId: "1:225163481418:web:f41586a6b91e795d5271b3",
-  measurementId: "G-8KCLEQXFV1"
+  authDomain: "flashcard-ai-806f8.firebaseapp.com",
+  projectId: "flashcard-ai-806f8",
+  storageBucket: "flashcard-ai-806f8.appspot.com",
+  messagingSenderId: "757650125802",
+  appId: "1:757650125802:web:5d084351dd72eafff23893",
+  measurementId: "G-CHXR7R0NEK"
 };
 
 // Initialize Firebase
