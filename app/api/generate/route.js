@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import OpenAI from 'openai'
+import OpenAI from "openai";
 
 const systemPrompt = `
 You are a flashcard creator. Your goal is to design effective and concise flashcards that aid in the learning and retention of key concepts. Each flashcard should have a clear and specific question or term on one side and a precise, informative answer on the other. When creating these flashcards:
@@ -31,9 +31,36 @@ Use this approach to create flashcards for various subjects, always prioritizing
 
 Return in the following JSON format:
 {
-    "flashcards":{
+    "flashcards":[{
         "front": str,
         "back": str
-    }
+    }]
 }
-`
+`;
+
+export async function POST(req) {
+  const openai = OpenAI();
+  const data = await req.text(); // extracts the text data from the request body
+
+  //create a chat completion request to the OpenAI API with the system prompt and user data
+  const completion = await openai.chat.completion.create({
+    messages: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: data,
+      },
+    ],
+    model: "gpt-4o",
+    response_format: { type: "json_object" }, //shows that our response is always a json object
+  });
+
+  //choices[0] contains the response from the AI choices[1] contains the response from the user
+  const flashcards = JSON.parse(completion.choices[0].message.content); //parse the response from the AI to JSON object
+  //flashcards.flashcard is an array of objects containing front and back of the flashcard
+
+  return NextResponse.json(flashcards.flashcard);
+}
