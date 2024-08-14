@@ -1,94 +1,87 @@
-import Image from "next/image";
+"use client";
+import {
+  Container,
+  Toolbar,
+  Typography,
+  AppBar,
+  Box,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import getStripe from "@/utils/get-stripe";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import Head from "next/head";
 
 export default function Home() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
+      <Head>
+        <title>Flashcards Saas</title>
+        <meta property="description" content="Flashcards created with AI" />
+      </Head>
+
+      <AppBar position="static">
+        <Toolbar>
+          <Typography
+            variant={isSmallScreen ? "h6" : "subtitle1"}
+            component="div"
+            sx={{ flexGrow: 1 }}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            Flashcards Saas
+          </Typography>
+          <SignedOut>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: { sm: 2, md: 4 },
+              }}
+            >
+              <Button color="inherit" size={isSmallScreen ? "small" : "medium"}>
+                Log In
+              </Button>
+              <Button color="inherit" size={isSmallScreen ? "small" : "medium"}>
+                Sign Up
+              </Button>
+            </Box>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </Toolbar>
+      </AppBar>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          mt: 4,
+        }}
+      >
+        <Typography variant={isSmallScreen ? "h4" : "h2"} align="center">
+          Welcome to Flashcards Saas
+        </Typography>
+        <Typography variant={isSmallScreen ? "h6" : "h4"} align="center">
+          Create flashcards with AI
+        </Typography>
+        <Button variant="contained" color="primary" sx={{ mt: 4 }}>
+          Get Started
+        </Button>
+      </Box>
+    </Box>
   );
 }
