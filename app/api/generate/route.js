@@ -39,28 +39,19 @@ Return in the following JSON format:
 `;
 
 export async function POST(req) {
-  const openai = OpenAI();
-  const data = await req.text(); // extracts the text data from the request body
+  const openai = new OpenAI();
+  const data = await req.json();
 
-  //create a chat completion request to the OpenAI API with the system prompt and user data
-  const completion = await openai.chat.completion.create({
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: data,
-      },
-    ],
-    model: "gpt-4o",
+  const completion = await openai.chat.completions.create({
+    messages: [{ role: "system", content: systemPrompt }, data], //put all the content of the chat in the data array
+    model: "gpt-4o-mini",
     response_format: { type: "json_object" }, //shows that our response is always a json object
   });
 
   //choices[0] contains the response from the AI choices[1] contains the response from the user
+  console.log(completion.choices[0].message.content)
   const flashcards = JSON.parse(completion.choices[0].message.content); //parse the response from the AI to JSON object
   //flashcards.flashcard is an array of objects containing front and back of the flashcard
 
-  return NextResponse.json(flashcards.flashcard);
+  return new NextResponse(flashcards.flashcard);
 }

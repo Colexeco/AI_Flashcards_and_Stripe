@@ -6,6 +6,7 @@ import {
   useTheme,
   useMediaQuery,
   Container,
+  TextField
 } from "@mui/material";
 import getStripe from "@/utils/get-stripe";
 import { DefaultRightContent } from "./components/Navbar";
@@ -15,10 +16,45 @@ import Image from "next/image";
 import Head from "next/head";
 import Features from "./components/Features";
 import dollarIcon from "@/public/icons/dollar.png";
+import { useState } from "react"
 
 export default function Home() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [message, setMessage] = useState(""); // User input
+
+  const sendMessage = async () => {
+    const route = "api/generate";
+    const newUserMessage = { role: "user", content: message };
+    try {
+      const response = await fetch(route, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUserMessage),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const reader = response.body.getReader(); // Read the response as a stream
+      const decoder = new TextDecoder(); // Decode the stream as text
+      let assistantResponse = { role: "assistant", content: "" };
+
+      while (true) {
+        // Read the stream until it's done
+        const { done, value } = await reader.read();
+        if (done) break;
+        const text = decoder.decode(value, { stream: true }); // Decode the chunk of text
+        assistantResponse.content += text;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <Box
@@ -167,6 +203,16 @@ export default function Home() {
               <Button variant="contained" color="primary" sx={{ mt: 6 }}>
                 Get Started
               </Button>
+              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={sendMessage}>
+                Test RAG
+              </Button>
+              <TextField
+                placeholder="Message..."
+                fullWidth
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                multiline
+              />
             </Box>
 
             <Box
