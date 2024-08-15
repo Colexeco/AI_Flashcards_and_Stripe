@@ -8,9 +8,9 @@ import {
   useMediaQuery,
   Link,
 } from "@mui/material";
-import { SignIn } from "@clerk/nextjs";
+import { SignUp } from "@clerk/nextjs";
 
-export default function Login() {
+export default function Signup() {
   return (
     <Box
       sx={{
@@ -29,21 +29,21 @@ export default function Login() {
         sx={{ textAlign: "center", my: 4 }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
-          Sign In
+          Sign Up
         </Typography>
         <Typography variant="h6" gutterBottom sx={{ mb: 4 }} color="white">
-          Don&apos;t have an account?{" "}
-          <Link href="/sign-up">
+          Already have an account?{" "}
+          <Link href="/sign-in">
             <Typography
               component="span"
               variant="h5"
               sx={{ color: "secondary.main" }}
             >
-              Sign Up
+              Sign In
             </Typography>
           </Link>
         </Typography>
-        <SignIn />
+        <SignUp />
       </Box>
     </Box>
   );

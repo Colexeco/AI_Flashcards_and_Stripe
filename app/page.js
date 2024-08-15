@@ -25,7 +25,6 @@ export default function Home() {
       sx={{
         display: "flex",
         flexDirection: "column",
-
         minHeight: "100vh",
         overflow: "hidden",
         bgcolor: "background.main",
@@ -154,6 +153,9 @@ export default function Home() {
             <Box>
               <Typography variant="h4">
                 Get Started with FlashUI for Only $1/Month
+              </Typography>
+              <Typography variant="h5" color="white">
+                Only for a limited time
               </Typography>
               <Typography variant="h6" color="tertiary.main" sx={{ mt: 4 }}>
                 &quot;Simple, Affordable, Effective&quot;
