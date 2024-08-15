@@ -1,17 +1,20 @@
 "use client";
 import {
-  Container,
-  Toolbar,
   Typography,
-  AppBar,
   Box,
   Button,
   useTheme,
   useMediaQuery,
+  Container,
 } from "@mui/material";
 import getStripe from "@/utils/get-stripe";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { DefaultRightContent } from "./components/Navbar";
+import Navbar from "./components/Navbar";
+import icons from "./icons";
+import Image from "next/image";
 import Head from "next/head";
+import Features from "./components/Features";
+import dollarIcon from "@/public/icons/dollar.png";
 
 export default function Home() {
   const theme = useTheme();
@@ -22,45 +25,17 @@ export default function Home() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+
+        minHeight: "100vh",
         overflow: "hidden",
+        bgcolor: "background.main",
       }}
     >
+      <Navbar rightContent={<DefaultRightContent />} />
       <Head>
         <title>Flashcards Saas</title>
         <meta property="description" content="Flashcards created with AI" />
       </Head>
-
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            variant={isSmallScreen ? "h6" : "subtitle1"}
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
-            Flashcards Saas
-          </Typography>
-          <SignedOut>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: { sm: 2, md: 4 },
-              }}
-            >
-              <Button color="inherit" size={isSmallScreen ? "small" : "medium"}>
-                Log In
-              </Button>
-              <Button color="inherit" size={isSmallScreen ? "small" : "medium"}>
-                Sign Up
-              </Button>
-            </Box>
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-        </Toolbar>
-      </AppBar>
 
       <Box
         sx={{
@@ -72,15 +47,147 @@ export default function Home() {
           mt: 4,
         }}
       >
-        <Typography variant={isSmallScreen ? "h4" : "h2"} align="center">
-          Welcome to Flashcards Saas
+        {/* Floating Icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: { xs: 2, sm: 4, md: 6 },
+            mb: 4,
+          }}
+        >
+          {icons.map((icon, index) => (
+            <Box
+              key={index}
+              width={isSmallScreen ? 60 : 130}
+              height={isSmallScreen ? 60 : 130}
+              sx={{
+                borderRadius: "50%",
+                borderColor: "white",
+                borderWidth: 2,
+                borderStyle: "solid",
+                overflow: "hidden",
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                animation: `float ${
+                  2 + index * 0.5
+                }s ease-in-out infinite alternate`, //animation named float, duration is 2 to 3.5 seconds based on index of icon
+                "@keyframes float": {
+                  "0%": {
+                    transform: "translateY(-10px)", // Move up 10px
+                  },
+                  "100%": {
+                    transform: "translateY(10px)", // Move down 10px
+                  },
+                },
+              }}
+            >
+              <Image
+                src={icon.src}
+                alt={icon.alt}
+                width={isSmallScreen ? 30 : 100}
+                height={isSmallScreen ? 30 : 100}
+                style={{ objectFit: "cover" }}
+              />
+            </Box>
+          ))}
+        </Box>
+
+        {/* Main Content */}
+        <Typography
+          variant={isSmallScreen ? "h3" : "h2"}
+          align="center"
+          color="secondary.main"
+          sx={{
+            fontWeight: "bold",
+            transform: "translateZ(0)",
+            transition: "transform 0.7s ease-out",
+            "&:hover": {
+              transform: "translateY(-10px) translateZ(0)",
+            },
+            mb: 2,
+          }}
+        >
+          FlashUI
         </Typography>
-        <Typography variant={isSmallScreen ? "h6" : "h4"} align="center">
-          Create flashcards with AI
+        <Typography
+          variant={isSmallScreen ? "h6" : "h4"}
+          align="center"
+          color="tertiary.main"
+        >
+          Supercharge Your UI Learning with AI-Powered Flashcards
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 4 }}>
+        <Button variant="contained" color="primary" sx={{ mt: 6 }}>
           Get Started
         </Button>
+
+        {/* Features */}
+        <Features />
+
+        {/* Pricing*/}
+        <Container
+          maxWidth="md"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            py: 8,
+          }}
+        >
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            color="secondary.main"
+            sx={{ mb: 4 }}
+          >
+            Pricing
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isSmallScreen ? "column" : "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box>
+              <Typography variant="h4">
+                Get Started with FlashUI for Only $1/Month
+              </Typography>
+              <Typography variant="h6" color="tertiary.main" sx={{ mt: 4 }}>
+                &quot;Simple, Affordable, Effective&quot;
+              </Typography>
+              <Typography variant="body1" color="white">
+                For just $1 a month, gain access to all the powerful features of
+                FlashUI. Enhance your UI skills without breaking the bank.
+              </Typography>
+              <Button variant="contained" color="primary" sx={{ mt: 6 }}>
+                Get Started
+              </Button>
+            </Box>
+
+            <Box
+              width={isSmallScreen ? 100 : 130}
+              height={isSmallScreen ? 100 : 130}
+              sx={{
+                overflow: "hidden",
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Image
+                src={dollarIcon}
+                alt={"price"}
+                width={isSmallScreen ? 80 : 100}
+                height={isSmallScreen ? 80 : 100}
+                style={{ objectFit: "cover" }}
+              />
+            </Box>
+          </Box>
+        </Container>
       </Box>
     </Box>
   );

@@ -6,26 +6,25 @@ const theme = createTheme({
   typography: {
     fontFamily: "Inter, sans-serif",
   },
-  /* palette: {
+  palette: {
     background: {
-      main: "#FFFFFF",
+      main: "#241e24",
     },
     primary: {
-      main: "#000000",
+      main: "#ffd6ff",
     },
     secondary: {
-      main: "#F2F2F2",
+      main: "#c8b6ff",
     },
     tertiary: {
-      main: "#2B8EAA",
+      main: "#e7c6ff",
     },
-    dark: { main: "#333333" },
-  }, */
+  },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          borderRadius: 20,
         },
       },
     },
@@ -40,6 +39,23 @@ const theme = createTheme({
       styleOverrides: {
         paper: {
           borderRadius: 10,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 20,
+          border: "1px solid #ffd6ff",
+          backgroundColor: "#241e24", // Use background.main color
+          color: "#ffd6ff", // Use primary.main color for text
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: "#ffd6ff", //primary.main color for text
         },
       },
     },
