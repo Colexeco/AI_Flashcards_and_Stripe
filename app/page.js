@@ -1,94 +1,194 @@
+"use client";
+import {
+  Typography,
+  Box,
+  Button,
+  useTheme,
+  useMediaQuery,
+  Container,
+} from "@mui/material";
+import getStripe from "@/utils/get-stripe";
+import { DefaultRightContent } from "./components/Navbar";
+import Navbar from "./components/Navbar";
+import icons from "./icons";
 import Image from "next/image";
+import Head from "next/head";
+import Features from "./components/Features";
+import dollarIcon from "@/public/icons/dollar.png";
 
 export default function Home() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+
+        minHeight: "100vh",
+        overflow: "hidden",
+        bgcolor: "background.main",
+      }}
+    >
+      <Navbar rightContent={<DefaultRightContent />} />
+      <Head>
+        <title>Flashcards Saas</title>
+        <meta property="description" content="Flashcards created with AI" />
+      </Head>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexGrow: 1,
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          mt: 4,
+        }}
+      >
+        {/* Floating Icons */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: { xs: 2, sm: 4, md: 6 },
+            mb: 4,
+          }}
+        >
+          {icons.map((icon, index) => (
+            <Box
+              key={index}
+              width={isSmallScreen ? 60 : 130}
+              height={isSmallScreen ? 60 : 130}
+              sx={{
+                borderRadius: "50%",
+                borderColor: "white",
+                borderWidth: 2,
+                borderStyle: "solid",
+                overflow: "hidden",
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                animation: `float ${
+                  2 + index * 0.5
+                }s ease-in-out infinite alternate`, //animation named float, duration is 2 to 3.5 seconds based on index of icon
+                "@keyframes float": {
+                  "0%": {
+                    transform: "translateY(-10px)", // Move up 10px
+                  },
+                  "100%": {
+                    transform: "translateY(10px)", // Move down 10px
+                  },
+                },
+              }}
+            >
+              <Image
+                src={icon.src}
+                alt={icon.alt}
+                width={isSmallScreen ? 30 : 100}
+                height={isSmallScreen ? 30 : 100}
+                style={{ objectFit: "cover" }}
+              />
+            </Box>
+          ))}
+        </Box>
+
+        {/* Main Content */}
+        <Typography
+          variant={isSmallScreen ? "h3" : "h2"}
+          align="center"
+          color="secondary.main"
+          sx={{
+            fontWeight: "bold",
+            transform: "translateZ(0)",
+            transition: "transform 0.7s ease-out",
+            "&:hover": {
+              transform: "translateY(-10px) translateZ(0)",
+            },
+            mb: 2,
+          }}
+        >
+          FlashUI
+        </Typography>
+        <Typography
+          variant={isSmallScreen ? "h6" : "h4"}
+          align="center"
+          color="tertiary.main"
+        >
+          Supercharge Your UI Learning with AI-Powered Flashcards
+        </Typography>
+        <Button variant="contained" color="primary" sx={{ mt: 6 }}>
+          Get Started
+        </Button>
+
+        {/* Features */}
+        <Features />
+
+        {/* Pricing*/}
+        <Container
+          maxWidth="md"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            py: 8,
+          }}
+        >
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            color="secondary.main"
+            sx={{ mb: 4 }}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            Pricing
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isSmallScreen ? "column" : "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box>
+              <Typography variant="h4">
+                Get Started with FlashUI for Only $1/Month
+              </Typography>
+              <Typography variant="h6" color="tertiary.main" sx={{ mt: 4 }}>
+                &quot;Simple, Affordable, Effective&quot;
+              </Typography>
+              <Typography variant="body1" color="white">
+                For just $1 a month, gain access to all the powerful features of
+                FlashUI. Enhance your UI skills without breaking the bank.
+              </Typography>
+              <Button variant="contained" color="primary" sx={{ mt: 6 }}>
+                Get Started
+              </Button>
+            </Box>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+            <Box
+              width={isSmallScreen ? 100 : 130}
+              height={isSmallScreen ? 100 : 130}
+              sx={{
+                overflow: "hidden",
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Image
+                src={dollarIcon}
+                alt={"price"}
+                width={isSmallScreen ? 80 : 100}
+                height={isSmallScreen ? 80 : 100}
+                style={{ objectFit: "cover" }}
+              />
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </Box>
   );
 }
