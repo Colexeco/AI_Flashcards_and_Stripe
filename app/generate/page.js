@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  InputLabel
 } from "@mui/material";
 import {
   doc,
@@ -40,7 +41,9 @@ export default function Generate() {
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
   const router = useRouter();
+
 
   //just for testing
   /* const sampleFlashcards = [
@@ -65,14 +68,43 @@ export default function Generate() {
     setFlashcards(sampleFlashcards);
   }, []); */
 
+  async function handleFileUpload(file) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/pdf', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        // Check if the result has the expected structure
+        if (result.flashcards && result.flashcards.length > 0) {
+            console.log(result.flashcards[0]); // Safely access the first flashcard
+        } else {
+            throw new Error('No flashcards found in the response');
+        }
+    } catch (error) {
+        console.error('Error uploading file:', error.message);
+    }
+}
+
+
+
   const handleSubmit = async () => {
-    fetch("api/generate", {
-      method: "POST",
-      body: text,
-    })
-      .then((res) => res.json()) //get the response in json
-      .then((data) => setFlashcards(data)); //set the response to the state
-  };
+
+    fetch('api/generate',{
+       method:'POST',
+       body:text,
+    }).then((res) => res.json())
+    .then((data) => setFlashcards(data))
+   }
 
   const handleCardClick = (id) => {
     setFlipped((prev) => ({
@@ -159,6 +191,24 @@ export default function Generate() {
       <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
         Generate
       </Button>
+      {/* New File Upload Section */}
+      <Paper sx={{ my: 2, width: "80%" }}>
+        <InputLabel htmlFor="file-upload">Upload PDF</InputLabel>
+        <input
+          id="file-upload"
+          type="file"
+          accept=".pdf"
+          onChange={(e) => setFile(e.target.files[0])}
+        />
+        <Button
+          variant="contained"
+          onClick={handleFileUpload}
+          sx={{ mt: 2 }}
+          disabled={!file}
+        >
+          Upload and Generate from PDF
+        </Button>
+      </Paper>
 
       {flashcards.length > 0 && (
         <Box sx={{ mt: 4, width: "80%" }}>
