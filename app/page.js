@@ -73,7 +73,7 @@ export default function Home() {
         flexDirection: "column",
         minHeight: "100vh",
         overflow: "hidden",
-        bgcolor: "background.main",
+        bgcolor: "background.default",
       }}
     >
       <Navbar rightContent={<DefaultRightContent />} />
@@ -164,7 +164,12 @@ export default function Home() {
         >
           Supercharge Your UI Learning with AI-Powered Flashcards
         </Typography>
-        <Button variant="contained" color="primary" sx={{ mt: 6 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 6 }}
+          href="/sign-up"
+        >
           Get Started
         </Button>
 
@@ -210,7 +215,12 @@ export default function Home() {
                 For just $1 a month, gain access to all the powerful features of
                 FlashUI. Enhance your UI skills without breaking the bank.
               </Typography>
-              <Button variant="contained" color="primary" sx={{ mt: 6 }}>
+              <Button
+                href="/sign-up"
+                variant="contained"
+                color="primary"
+                sx={{ mt: 6 }}
+              >
                 Get Started
               </Button>
               <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testGeneration}>

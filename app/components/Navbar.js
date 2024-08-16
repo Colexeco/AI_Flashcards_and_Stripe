@@ -8,6 +8,7 @@ import {
   Button,
   useTheme,
   useMediaQuery,
+  Link,
 } from "@mui/material";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -23,7 +24,7 @@ export default function Navbar({ rightContent }) {
         justifyContent: "center",
         width: "100%",
         px: isSmallScreen ? 2 : 8,
-        bgcolor: "background.main",
+        bgcolor: "background.default",
         mt: 2,
       }}
     >
@@ -34,7 +35,7 @@ export default function Navbar({ rightContent }) {
           border: "1px solid #ffd6ff",
           width: "100%",
           maxWidth: 1200,
-          bgcolor: "background.main",
+          bgcolor: "background.default",
         }}
       >
         <Toolbar
@@ -76,7 +77,9 @@ export function DefaultRightContent() {
           }}
         >
           <Button size={isSmallScreen ? "small" : "large"}>Team</Button>
-          <Button size={isSmallScreen ? "small" : "large"}>Sign In</Button>
+          <Button size={isSmallScreen ? "small" : "large"} href="/sign-in">
+            Sign In
+          </Button>
         </Box>
       </SignedOut>
       <SignedIn>

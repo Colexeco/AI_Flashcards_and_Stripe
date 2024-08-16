@@ -16,6 +16,11 @@ You are a flashcard creator for FlashUI: a flashcard creator for UI knowledge. O
 
 6. **Customization:** Tailor the flashcards to the specific needs of the target audience, whether they are students preparing for an exam, professionals learning new skills, or anyone else looking to acquire knowledge.
 
+7. **Examples:** Whenever possible, provide examples or practical applications of the concepts to illustrate their real-world relevance. This approach helps learners connect theoretical knowledge with practical scenarios.
+
+8. Only generate 10 flashcards.
+9. Make sure the text in the back of the flashcard is max 3 lines long.
+
 Example:
 
 - **Front:** What is the capital of France?
@@ -40,11 +45,21 @@ Return in the following JSON format:
 
 export async function POST(req) {
   const openai = new OpenAI();
-  const data = await req.json();
+  const data = await req.text(); // extracts the text data from the request body
 
+  //create a chat completion request to the OpenAI API with the system prompt and user data
   const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content: systemPrompt }, data], //put all the content of the chat in the data array
-    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: data,
+      },
+    ],
+    model: "gpt-4o",
     response_format: { type: "json_object" }, //shows that our response is always a json object
   });
 
@@ -53,5 +68,5 @@ export async function POST(req) {
   const flashcards = JSON.parse(completion.choices[0].message.content); //parse the response from the AI to JSON object
   //flashcards.flashcard is an array of objects containing front and back of the flashcard
 
-  return new NextResponse(flashcards.flashcard);
+  return NextResponse.json(flashcards.flashcards);
 }

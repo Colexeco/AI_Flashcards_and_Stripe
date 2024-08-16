@@ -8,7 +8,7 @@ const theme = createTheme({
   },
   palette: {
     background: {
-      main: "#241e24",
+      default: "#241e24",
     },
     primary: {
       main: "#ffd6ff",
@@ -28,10 +28,54 @@ const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 20,
+          backgroundColor: "#241e24",
+          color: "#ffd6ff",
+          border: "1px solid #ffd6ff",
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#ffd6ff",
+            },
+            "&:hover fieldset": {
+              borderColor: "#ffd6ff",
+            },
+          },
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "#ffd6ff",
+          "&.Mui-focused": {
+            color: "#ffd6ff",
+          },
+        },
+      },
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 40,
+          borderRadius: 20,
+          color: "#ffd6ff",
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ffd6ff",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ffd6ff",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#ffd6ff",
+          },
         },
       },
     },
@@ -53,6 +97,13 @@ const theme = createTheme({
       },
     },
     MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: "#ffd6ff", //primary.main color for text
+        },
+      },
+    },
+    MuiDialogContentText: {
       styleOverrides: {
         root: {
           color: "#ffd6ff", //primary.main color for text
