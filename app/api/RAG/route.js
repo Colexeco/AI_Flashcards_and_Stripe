@@ -3,10 +3,11 @@ import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
+import { pull } from "langchain/hub";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { NextResponse } from "next/server";
-import { SystemMessagePromptTemplate, ChatPromptTemplate } from "@langchain/core/prompts"
+import { SystemMessagePromptTemplate } from "@langchain/core/prompts"
 
 const systemPrompt = `
 You are a flashcard creator for FlashUI: a flashcard creator for UI knowledge. Only create flashcards for knowledge about UI/UX. Refuse to make flashcards for any other knowledge domain. Your goal is to design effective and concise flashcards that aid in the learning and retention of key concepts. Each flashcard should have a clear and specific question or term on one side and a precise, informative answer on the other. When creating these flashcards:
@@ -37,15 +38,15 @@ Example:
 - **Back:** Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll. The process involves the intake of carbon dioxide and water, which are then converted into glucose and oxygen. 
 
 - **Front:** What is the formula for calculating the area of a circle?
-- **Back:** The area of a circle is calculated using the formula \\( A = \\pi r^2 \\), where \\( r \\) is the radius of the circle.
+- **Back:** The area of a circle is calculated using the formula \( A = \pi r^2 \), where \( r \) is the radius of the circle.
 
 Use this approach to create flashcards for various subjects, always prioritizing the learner's understanding and retention.
 
 Return in the following JSON format:
 {
     "flashcards":[{
-        "front": "{str}",
-        "back": "{str}"
+        "front": str,
+        "back": str
     }]
 }
 `;
@@ -77,25 +78,15 @@ export async function POST(req) {
 
         // Retrieve and generate using the relevant snippets of the blog.
         const retriever = vectorStore.asRetriever();
-        const message = SystemMessagePromptTemplate.fromTemplate(systemPrompt);
-        const chatPrompt = ChatPromptTemplate.fromMessages([
-        `You are an assistant for question-answering tasks. 
-        Use the following pieces of retrieved context to answer the question. 
-        If you don't know the answer, just say that you don't know. 
-        Use three sentences maximum and keep the answer concise.
-        Question: {question} 
-        Context: {context} 
-        Answer:`,
-        message,
-        ]);
+        const chatPrompt = await pull("rlm/rag-prompt");
         const llm = new ChatOpenAI({ 
             model: "gpt-4o-mini", 
             temperature: 0 
         });
-
+        //const combinedPrompt = `${systemPrompt}\n\n${prompt.promptMessages.map((msg) => msg.prompt.template).join("\n")}`;
         const ragChain = await createStuffDocumentsChain({
             llm,
-            chatPrompt,
+            prompt: chatPrompt,
             outputParser: new StringOutputParser(),
         });
 
@@ -110,7 +101,6 @@ export async function POST(req) {
 
             console.log(contentWithoutUrls);
             const retrievedDocs = await retriever.invoke(contentWithoutUrls);
-            console.log(prompt.promptMessages.map((msg) => msg.prompt.template).join("\n"));
             const res = await ragChain.invoke({
                 question: contentWithoutUrls,
                 context: retrievedDocs,
