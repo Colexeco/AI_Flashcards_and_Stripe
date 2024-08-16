@@ -48,7 +48,7 @@ Return in the following JSON format:
 
 export async function POST(req) {
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY // Ensure the API key is set correctly
+    apiKey: process.env.OPENAI_API_KEY 
   });
 
   try {
