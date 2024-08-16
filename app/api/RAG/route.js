@@ -1,40 +1,49 @@
-import { ChatOpenAI } from "@langchain/openai";
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import "cheerio";
+import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { pull } from "langchain/hub";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import {
-  RunnablePassthrough,
-  RunnableSequence,
-} from "@langchain/core/runnables";
-import { formatDocumentsAsString } from "langchain/util/document";
+import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
-    const llm = new ChatOpenAI({
-        model: "gpt-4o-mini",
-        temperature: 0
+    const loader = new CheerioWebBaseLoader(
+    "https://lilianweng.github.io/posts/2023-06-23-agent/"
+    );
+
+    const docs = await loader.load();
+
+    const textSplitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1000,
+        chunkOverlap: 200,
     });
-      
+    const splits = await textSplitter.splitDocuments(docs);
+    const vectorStore = await MemoryVectorStore.fromDocuments(
+        splits,
+        new OpenAIEmbeddings()
+    );
+
+    // Retrieve and generate using the relevant snippets of the blog.
+    const retriever = vectorStore.asRetriever();
     const prompt = await pull("rlm/rag-prompt");
-    const exampleMessages = await prompt.invoke({
-        context: "filler context",
-        question: "filler question",
+    const llm = new ChatOpenAI({ model: "gpt-4o-mini", temperature: 0 });
+
+    const ragChain = await createStuffDocumentsChain({
+        llm,
+        prompt,
+        outputParser: new StringOutputParser(),
     });
-    exampleMessages;
-    console.log(exampleMessages.messages[0].content);
-    const ragChain = RunnableSequence.from([
-    {
-        context: retriever.pipe(formatDocumentsAsString),
-        question: new RunnablePassthrough(),
-    },
-    prompt,
-    llm,
-    new StringOutputParser(),
-    ]);
-    for await (const chunk of await ragChain.stream(
-        "What is task decomposition?"
-    )) {
-    console.log(chunk);
-    }
+
+    const encoder = new TextEncoder();
+    const retrievedDocs = await retriever.invoke("what is task decomposition");
+    console.log(prompt.promptMessages.map((msg) => msg.prompt.template).join("\n"));
+    const res = await ragChain.invoke({
+        question: "What is task decomposition?",
+        context: retrievedDocs,
+    });
+    console.log(res)
+    return new NextResponse(res)
 }

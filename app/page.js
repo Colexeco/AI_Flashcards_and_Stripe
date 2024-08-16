@@ -24,7 +24,7 @@ export default function Home() {
 
   const [message, setMessage] = useState(""); // User input
 
-  const sendMessage = async () => {
+  const testGeneration = async () => {
     const route = "api/generate";
     const newUserMessage = { role: "user", content: message };
     try {
@@ -40,17 +40,27 @@ export default function Home() {
         throw new Error("Network response was not ok");
       }
 
-      const reader = response.body.getReader(); // Read the response as a stream
-      const decoder = new TextDecoder(); // Decode the stream as text
-      let assistantResponse = { role: "assistant", content: "" };
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-      while (true) {
-        // Read the stream until it's done
-        const { done, value } = await reader.read();
-        if (done) break;
-        const text = decoder.decode(value, { stream: true }); // Decode the chunk of text
-        assistantResponse.content += text;
+  const testRAG = async () => {
+    const route = "api/RAG";
+    const newUserMessage = { role: "user", content: message };
+    try {
+      const response = await fetch(route, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUserMessage),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+
     } catch (error) {
       console.error("Error:", error);
     }
@@ -203,8 +213,8 @@ export default function Home() {
               <Button variant="contained" color="primary" sx={{ mt: 6 }}>
                 Get Started
               </Button>
-              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={sendMessage}>
-                Test RAG
+              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testGeneration}>
+                Test Generation
               </Button>
               <TextField
                 placeholder="Message..."
@@ -213,6 +223,9 @@ export default function Home() {
                 onChange={(e) => setMessage(e.target.value)}
                 multiline
               />
+              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testRAG}>
+                Test Rag
+              </Button>
             </Box>
 
             <Box
