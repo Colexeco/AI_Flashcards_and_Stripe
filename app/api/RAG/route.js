@@ -4,14 +4,17 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
 import { pull } from "langchain/hub";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
+    const data = await req.text(); // extracts the text data from the request body
+    const urlExtractionString = new String(data)
+    const urls = urlExtractionString.match(/https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}/igm)
+    console.log(urls)
     const loader = new CheerioWebBaseLoader(
-    "https://lilianweng.github.io/posts/2023-06-23-agent/"
+        ...urls,
     );
 
     const docs = await loader.load();
@@ -38,10 +41,10 @@ export async function POST(req) {
     });
 
     const encoder = new TextEncoder();
-    const retrievedDocs = await retriever.invoke("what is task decomposition");
+    const retrievedDocs = await retriever.invoke("What is the difference between UI and UX design?");
     console.log(prompt.promptMessages.map((msg) => msg.prompt.template).join("\n"));
     const res = await ragChain.invoke({
-        question: "What is task decomposition?",
+        question: "What is the difference between UI and UX design?",
         context: retrievedDocs,
     });
     console.log(res)
