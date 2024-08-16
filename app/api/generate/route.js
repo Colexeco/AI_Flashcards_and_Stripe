@@ -64,6 +64,7 @@ export async function POST(req) {
   });
 
   //choices[0] contains the response from the AI choices[1] contains the response from the user
+  console.log(completion.choices[0].message.content)
   const flashcards = JSON.parse(completion.choices[0].message.content); //parse the response from the AI to JSON object
   //flashcards.flashcard is an array of objects containing front and back of the flashcard
 
