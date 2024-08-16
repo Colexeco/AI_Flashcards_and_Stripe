@@ -18,7 +18,7 @@ export default function Login() {
         flexDirection: "column",
         minHeight: "100vh",
         overflow: "hidden",
-        bgcolor: "background.main",
+        bgcolor: "background",
       }}
     >
       <Box
