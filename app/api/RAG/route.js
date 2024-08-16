@@ -7,7 +7,8 @@ import { pull } from "langchain/hub";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { NextResponse } from "next/server";
-import { SystemMessagePromptTemplate } from "@langchain/core/prompts"
+import { SystemMessagePromptTemplate, ChatPromptTemplate } from "@langchain/core/prompts"
+import OpenAI from "openai";
 
 const systemPrompt = `
 You are a flashcard creator for FlashUI: a flashcard creator for UI knowledge. Only create flashcards for knowledge about UI/UX. Refuse to make flashcards for any other knowledge domain. Your goal is to design effective and concise flashcards that aid in the learning and retention of key concepts. Each flashcard should have a clear and specific question or term on one side and a precise, informative answer on the other. When creating these flashcards:
@@ -42,14 +43,16 @@ Example:
 
 Use this approach to create flashcards for various subjects, always prioritizing the learner's understanding and retention.
 
-Return in the following JSON format:
-{
-    "flashcards":[{
-        "front": str,
-        "back": str
-    }]
-}
+Return in the following JSON format as an array of flashcards, where each flashcard has a front and back of type string:
+
 `;
+//TODO: replace verbal description of JSON format above with explicit description below (adding the following caused errors: single }, etc)
+// {
+//     "flashcards":[{
+//         "front": str,
+//         "back": str
+//     }]
+// }
 
 export async function POST(req) {
     const data = await req.text(); // extracts the text data from the request body
@@ -83,10 +86,18 @@ export async function POST(req) {
             model: "gpt-4o-mini", 
             temperature: 0 
         });
-        //const combinedPrompt = `${systemPrompt}\n\n${prompt.promptMessages.map((msg) => msg.prompt.template).join("\n")}`;
+        const message = SystemMessagePromptTemplate.fromTemplate(systemPrompt)
+        //console.log(chatPrompt.promptMessages.map((msg) => msg.prompt.template).join("\n"));
+        const combinedPrompt = ChatPromptTemplate.fromMessages([
+            `You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question.
+            Question: {question} 
+            Context: {context} 
+            Answer:`,
+            message,
+          ]);
         const ragChain = await createStuffDocumentsChain({
             llm,
-            prompt: chatPrompt,
+            prompt: combinedPrompt,
             outputParser: new StringOutputParser(),
         });
 
@@ -119,5 +130,27 @@ export async function POST(req) {
             return new NextResponse(res)
         }
     }
-    return new NextResponse("")
+    //create a chat completion request to the OpenAI API with the system prompt and user data
+    const openai = new OpenAI();
+    const completion = await openai.chat.completions.create({
+        messages: [
+        {
+            role: "system",
+            content: systemPrompt,
+        },
+        {
+            role: "user",
+            content: data,
+        },
+        ],
+        model: "gpt-4o",
+        response_format: { type: "json_object" }, //shows that our response is always a json object
+    });
+
+    //choices[0] contains the response from the AI choices[1] contains the response from the user
+    console.log(completion.choices[0].message.content)
+    const flashcards = JSON.parse(completion.choices[0].message.content); //parse the response from the AI to JSON object
+    //flashcards.flashcard is an array of objects containing front and back of the flashcard
+
+    return NextResponse.json(flashcards.flashcards);
 }
