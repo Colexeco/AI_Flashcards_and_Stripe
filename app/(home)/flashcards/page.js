@@ -1,5 +1,11 @@
+"use client";
 import { Typography, Box } from "@mui/material";
 import React from "react";
+import { useUser } from "@clerk/nextjs";
+import { useStat, useEffect } from "react";
+import { CollectionReference, doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "@/firebase";
+import { useRouter } from "next/router";
 
 export default function Flashcards() {
   return (

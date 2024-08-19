@@ -40,6 +40,7 @@ export default function Generate() {
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   //just for testing
@@ -66,12 +67,22 @@ export default function Generate() {
   }, []); */
 
   const handleSubmit = async () => {
+    setIsLoading(true);
     fetch("api/generate", {
       method: "POST",
       body: text,
     })
       .then((res) => res.json()) //get the response in json
-      .then((data) => setFlashcards(data)); //set the response to the state
+      .then((data) => {
+        setFlashcards(data); //set the response to the state
+
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error generating flashcards:", error);
+        setIsLoading(false);
+      });
+    setText(""); //clear the text field
   };
 
   const handleCardClick = (id) => {
@@ -153,14 +164,19 @@ export default function Generate() {
           rows={4}
           elevation={6}
           variant="outlined"
-          placeholder="Enter text to generate flashcards"
+          placeholder="Enter a UI topic to generate flashcards on it..."
         />
       </Paper>
       <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
         Generate
       </Button>
+      {isLoading && (
+        <Typography variant="h5" sx={{ mt: 4 }}>
+          Generating flashcards...
+        </Typography>
+      )}
 
-      {flashcards.length > 0 && (
+      {!isLoading && flashcards.length > 0 && (
         <Box sx={{ mt: 4, width: "80%" }}>
           <Typography variant="h5" component="h2" gutterBottom>
             Flashcards Preview
