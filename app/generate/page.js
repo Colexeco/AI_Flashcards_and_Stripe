@@ -40,6 +40,7 @@ export default function Generate() {
   const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
   const router = useRouter();
 
   //just for testing
@@ -65,6 +66,10 @@ export default function Generate() {
     setFlashcards(sampleFlashcards);
   }, []); */
 
+  const handleFileChange = (event) => {
+    setPdfFile(event.target.files[0]);
+  }
+/*
   const handleSubmit = async () => {
     fetch("api/generate", {
       method: "POST",
@@ -72,6 +77,28 @@ export default function Generate() {
     })
       .then((res) => res.json()) //get the response in json
       .then((data) => setFlashcards(data)); //set the response to the state
+  };*/
+  const handleSubmit = async () => {
+    if (text) {
+      fetch("api/generate", {
+        method: "POST",
+        body: text,
+      })
+        .then((res) => res.json())
+        .then((data) => setFlashcards(data));
+    } else if (pdfFile) {
+      const formData = new FormData();
+      formData.append('file', pdfFile);
+  
+      fetch("api/generatepdf", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => setFlashcards(data));
+    } else {
+      alert("Please enter text or upload a PDF file");
+    }
   };
 
   const handleCardClick = (id) => {
@@ -95,7 +122,7 @@ export default function Generate() {
       return;
     }
 
-    const batch = writeBatch(db); //perform multiple writes as a single atomic operation, so we dont spend too much money
+    const batch = writeBatch(db); //perform multiple writes as a single atomic operation
     const userDocRef = doc(collection(db, "users"), user.id); //get the user document reference
     const docSnap = await getDoc(userDocRef); //get the user document snapshot
 
@@ -126,25 +153,11 @@ export default function Generate() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        minHeight: "100vh",
-        overflow: "hidden",
-        bgcolor: "background",
-      }}
-    >
-      <Typography
-        variant={isSmallScreen ? "h4" : "h2"}
-        component="h1"
-        gutterBottom
-        sx={{ mt: 4 }}
-      >
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h4" gutterBottom>
         Generate Flashcards
       </Typography>
-      <Paper sx={{ my: 2, width: "80%" }}>
+      <Box component="form" noValidate autoComplete="off" sx={{ mt: 3 }}>
         <TextField
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -155,10 +168,24 @@ export default function Generate() {
           variant="outlined"
           placeholder="Enter text to generate flashcards"
         />
-      </Paper>
-      <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
-        Generate
-      </Button>
+        <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+          Or upload a PDF file:
+        </Typography>
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileChange}
+          style={{ marginBottom: '1rem' }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          fullWidth
+        >
+          Generate
+        </Button>
+      </Box>
 
       {flashcards.length > 0 && (
         <Box sx={{ mt: 4, width: "80%" }}>
