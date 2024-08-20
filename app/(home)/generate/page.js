@@ -297,7 +297,7 @@ export default function Generate() {
             <Button
               variant="contained"
               fullWidth
-              onClick={handleOpen}
+              onClick={handleOpenGenerated}
               sx={{ mb: 4 }}
             >
               Save
