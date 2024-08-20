@@ -43,7 +43,7 @@ export default function Flashcards() {
   }
 
   const handleCardClick = (id) => {
-    router.push(`/flashcards?id=${id}`);
+    router.push(`/flashcard?id=${id}`);
   };
 
   return (
