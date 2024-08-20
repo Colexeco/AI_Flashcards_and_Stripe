@@ -11,22 +11,13 @@ import {
   TextField,
   Button,
   Grid,
-  Card,
-  CardActionArea,
-  CardContent,
   DialogTitle,
   Dialog,
   DialogContent,
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  writeBatch,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, writeBatch } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -42,28 +33,19 @@ export default function Generate() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  //just for testing
-  /* const sampleFlashcards = [
-    {
-      id: 1,
-      front: "What is React?",
-      back: "A common feature that can be easily implemented using Material UI's `Button` component is a customizable button with properties like onClick event handling, variant (contained, outlined, text), color (primary, secondary), and size (small, medium, large).",
-    },
-    {
-      id: 2,
-      front: "What is JSX?",
-      back: "A syntax extension for JavaScript used with React",
-    },
-    {
-      id: 3,
-      front: "What is a component in React?",
-      back: "A reusable piece of UI",
-    },
-  ];
-  //for testing
   useEffect(() => {
-    setFlashcards(sampleFlashcards);
-  }, []); */
+    if (isLoaded && !isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isLoaded, isSignedIn, router]);
+
+  if (!isLoaded || !isSignedIn) {
+    return (
+      <Typography variant="h6" sx={{ mt: 4 }}>
+        Loading...
+      </Typography>
+    );
+  }
 
   const handleSubmit = async () => {
     fetch("api/generate", {
