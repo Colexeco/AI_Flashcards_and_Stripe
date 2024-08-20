@@ -24,48 +24,6 @@ export default function Home() {
 
   const [message, setMessage] = useState(""); // User input
 
-  const testGeneration = async () => {
-    const route = "api/generate";
-    const newUserMessage = { role: "user", content: message };
-    try {
-      const response = await fetch(route, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUserMessage),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const testRAG = async () => {
-    const route = "api/RAG";
-    const newUserMessage = { role: "user", content: message };
-    try {
-      const response = await fetch(route, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUserMessage),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   return (
     <Box
       sx={{
