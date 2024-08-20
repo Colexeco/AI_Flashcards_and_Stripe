@@ -324,7 +324,7 @@ export default function Generate() {
               <Button variant="contained" onClick={saveFlashcards}>
                 Save
               </Button>
-              <Button variant="contained" onClick={handleClose}>
+              <Button variant="contained" onClick={handleCloseGenerated}>
                 Cancel
               </Button>
             </DialogActions>
