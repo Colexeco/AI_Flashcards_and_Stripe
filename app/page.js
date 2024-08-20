@@ -6,7 +6,7 @@ import {
   useTheme,
   useMediaQuery,
   Container,
-  TextField
+  TextField,
 } from "@mui/material";
 import getStripe from "@/utils/get-stripe";
 import { DefaultRightContent } from "./components/Navbar";
@@ -16,7 +16,7 @@ import Image from "next/image";
 import Head from "next/head";
 import Features from "./components/Features";
 import dollarIcon from "@/public/icons/dollar.png";
-import { useState } from "react"
+import { useState } from "react";
 
 export default function Home() {
   const theme = useTheme();
@@ -39,7 +39,6 @@ export default function Home() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -60,7 +59,6 @@ export default function Home() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
     } catch (error) {
       console.error("Error:", error);
     }
@@ -222,19 +220,6 @@ export default function Home() {
                 sx={{ mt: 6 }}
               >
                 Get Started
-              </Button>
-              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testGeneration}>
-                Test Generation
-              </Button>
-              <TextField
-                placeholder="Message..."
-                fullWidth
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                multiline
-              />
-              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testRAG}>
-                Test Rag
               </Button>
             </Box>
 
