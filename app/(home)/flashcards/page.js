@@ -60,7 +60,7 @@ export default function Flashcards() {
       <Typography variant="h2" component="h1" gutterBottom sx={{ mt: 4 }}>
         My Flashcards
       </Typography>
-      <Container maxWidth="100vw">
+      <Container maxWidth="100vw" sx={{ mb: 4 }}>
         <Grid container spacing={3} sx={{ mt: 4 }}>
           {flashcards.map((flashcard, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>

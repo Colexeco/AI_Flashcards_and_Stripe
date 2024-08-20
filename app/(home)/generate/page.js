@@ -26,6 +26,7 @@ import {
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { CirclePlus } from "lucide-react";
 
 export default function Generate() {
   const theme = useTheme();
@@ -36,9 +37,14 @@ export default function Generate() {
   const [flipped, setFlipped] = useState([]);
   const [text, setText] = useState("");
   const [name, setName] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openGenerated, setOpenGenerated] = useState(false);
+  const [openUserCreated, setOpenUserCreated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const [userFlashcards, setUserFlashcards] = useState([]);
+  const [currentFront, setCurrentFront] = useState("");
+  const [currentBack, setCurrentBack] = useState("");
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -53,6 +59,23 @@ export default function Generate() {
       </Typography>
     );
   }
+
+  const addFlashcard = () => {
+    if (currentFront.trim() === "" || currentBack.trim() === "") {
+      alert("Please fill in both front and back of the flashcard");
+      return;
+    }
+    if (userFlashcards.length >= 10) {
+      alert("You can only create up to 10 flashcards at a time");
+      return;
+    }
+    setUserFlashcards([
+      ...userFlashcards,
+      { front: currentFront, back: currentBack },
+    ]);
+    setCurrentFront("");
+    setCurrentBack("");
+  };
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -80,12 +103,20 @@ export default function Generate() {
     }));
   };
 
-  const handleOpen = () => {
-    setOpen(true);
+  const handleOpenGenerated = () => {
+    setOpenGenerated(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseGenerated = () => {
+    setOpenGenerated(false);
+  };
+
+  const handleOpenUserCreated = () => {
+    setOpenUserCreated(true);
+  };
+
+  const handleCloseUserCreated = () => {
+    setOpenUserCreated(false);
   };
 
   const saveFlashcards = async () => {
@@ -93,7 +124,12 @@ export default function Generate() {
       alert("Please enter a name");
       return;
     }
+    const cardsToSave = flashcards.length > 0 ? flashcards : userFlashcards;
 
+    if (cardsToSave.length === 0) {
+      alert("Please generate or create at least one flashcard");
+      return;
+    }
     const batch = writeBatch(db); //perform multiple writes as a single atomic operation, so we dont spend too much money
     const userDocRef = doc(collection(db, "users"), user.id); //get the user document reference
     const docSnap = await getDoc(userDocRef); //get the user document snapshot
@@ -114,14 +150,25 @@ export default function Generate() {
 
     //collection for the flashcards themselves
     const colRef = collection(userDocRef, name);
-    flashcards.forEach((flashcard) => {
+    cardsToSave.forEach((flashcard) => {
       const cardDocRef = doc(colRef); // Firestore auto-generates an ID
       batch.set(cardDocRef, flashcard); //add the flashcard to the batch
     });
 
     await batch.commit(); //commit the batch
-    handleClose();
+    handleCloseGenerated();
+    handleCloseUserCreated();
+    setFlashcards([]);
+    setUserFlashcards([]);
     router.push("/flashcards");
+  };
+
+  const handleSaveUserFlashcards = () => {
+    if (userFlashcards.length === 0) {
+      alert("Please create at least one flashcard");
+      return;
+    }
+    handleOpenUserCreated();
   };
 
   return (
@@ -256,7 +303,7 @@ export default function Generate() {
               Save
             </Button>
           </Box>
-          <Dialog open={open} onClose={handleClose}>
+          <Dialog open={openGenerated} onClose={handleCloseGenerated}>
             <DialogTitle>Save Flashcards</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -284,6 +331,118 @@ export default function Generate() {
           </Dialog>
         </Box>
       )}
+
+      <Box
+        sx={{
+          mt: 4,
+          mb: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "80%",
+        }}
+      >
+        <Typography
+          variant={isSmallScreen ? "h6" : "h4"}
+          component="h2"
+          gutterBottom
+        >
+          Create your own flashcards
+        </Typography>
+        <Paper sx={{ my: 2, width: "100%" }}>
+          <TextField
+            value={currentFront}
+            onChange={(e) => setCurrentFront(e.target.value)}
+            fullWidth
+            multiline
+            rows={2}
+            elevation={6}
+            variant="outlined"
+            placeholder="Text on the front of the flashcard"
+          />
+        </Paper>
+        <Paper sx={{ my: 2, width: "100%" }}>
+          <TextField
+            value={currentBack}
+            onChange={(e) => setCurrentBack(e.target.value)}
+            fullWidth
+            multiline
+            rows={4}
+            elevation={6}
+            variant="outlined"
+            placeholder="Text on the back of the flashcard"
+          />
+        </Paper>
+        <Button onClick={addFlashcard} disabled={userFlashcards.length >= 10}>
+          <CirclePlus />
+        </Button>
+
+        {userFlashcards.length > 0 && (
+          <Box sx={{ mt: 4, width: "100%" }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Your Flashcards ({userFlashcards.length}/10)
+            </Typography>
+            <Grid container spacing={3}>
+              {userFlashcards.map((flashcard, index) => (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Box
+                    sx={{
+                      border: 1,
+                      borderColor: "primary.main",
+                      borderRadius: 2,
+                      p: 2,
+                      height: "100%",
+                    }}
+                  >
+                    <Typography variant="h6">
+                      Front: {flashcard.front}
+                    </Typography>
+                    <Typography variant="body1" color="secondary.main">
+                      Back: {flashcard.back}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleSaveUserFlashcards}
+              sx={{ mt: 4 }}
+              disabled={flashcards.length > 0}
+            >
+              Save
+            </Button>
+            <Dialog open={openUserCreated} onClose={handleCloseUserCreated}>
+              <DialogTitle>Save Flashcards</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Please enter a name for your flashcards collection
+                </DialogContentText>
+                <TextField
+                  label="Collection Name"
+                  margin="dense"
+                  fullWidth
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                />
+              </DialogContent>
+              <DialogActions sx={{ mb: 2 }}>
+                <Button variant="contained" onClick={saveFlashcards}>
+                  Save
+                </Button>
+                <Button variant="contained" onClick={handleCloseUserCreated}>
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
