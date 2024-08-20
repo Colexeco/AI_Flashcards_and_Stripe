@@ -223,19 +223,6 @@ export default function Home() {
               >
                 Get Started
               </Button>
-              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testGeneration}>
-                Test Generation
-              </Button>
-              <TextField
-                placeholder="Message..."
-                fullWidth
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                multiline
-              />
-              <Button variant="contained" color="primary" sx={{ mt: 6 }} onClick={testRAG}>
-                Test Rag
-              </Button>
             </Box>
 
             <Box
