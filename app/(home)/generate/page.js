@@ -17,7 +17,13 @@ import {
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import { doc, getDoc, setDoc, collection, writeBatch } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+} from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -50,7 +56,7 @@ export default function Generate() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    fetch("api/generate", {
+    fetch("api/RAG", {
       method: "POST",
       body: text,
     })
