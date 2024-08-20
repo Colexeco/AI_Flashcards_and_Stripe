@@ -88,3 +88,30 @@ export function DefaultRightContent() {
     </>
   );
 }
+
+export function HomeRightContent() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  return (
+    <>
+      <SignedIn>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: { xs: 1, sm: 2, md: 4 },
+          }}
+        >
+          <Button size={isSmallScreen ? "small" : "large"} href="/generate">
+            Generate
+          </Button>
+          <Button size={isSmallScreen ? "small" : "large"} href="/flashcards">
+            Flashcards
+          </Button>
+          <UserButton />
+        </Box>
+      </SignedIn>
+    </>
+  );
+}
