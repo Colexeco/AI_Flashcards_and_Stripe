@@ -22,48 +22,33 @@ export default function Home() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [message, setMessage] = useState(""); // User input
-
-  const testGeneration = async () => {
-    const route = "api/generate";
-    const newUserMessage = { role: "user", content: message };
+  const handleSubmit = async (event) => {
     try {
-      const response = await fetch(route, {
+      const checkoutSession = await fetch("/api/checkout_sessions", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          origin: "https://ai-flashcards-and-stripe-zeta.vercel.app",
         },
-        body: JSON.stringify(newUserMessage),
+      });
+      if (!checkoutSession.ok) {
+        const errorData = await checkoutSession.json();
+        console.error(errorData.error.message);
+        return;
+      }
+
+      const checkoutSessionData = await checkoutSession.json();
+      const stripe = await getStripe();
+      const error = await stripe.redirectToCheckout({
+        sessionId: checkoutSessionData.id,
       });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      if (error) {
+        console.warn(error.message);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error handling submit", error);
     }
   };
-
-  const testRAG = async () => {
-    const route = "api/RAG";
-    const newUserMessage = { role: "user", content: message };
-    try {
-      const response = await fetch(route, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUserMessage),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   return (
     <Box
       sx={{
@@ -214,7 +199,7 @@ export default function Home() {
                 FlashUI. Enhance your UI skills without breaking the bank.
               </Typography>
               <Button
-                href="/sign-up"
+                onClick={handleSubmit}
                 variant="contained"
                 color="primary"
                 sx={{ mt: 6 }}
