@@ -3,16 +3,20 @@
 FlashUI is an AI powered flashcard application specifically for UI related topics. It allows users to generate flashcards by just putting in a UI topic, or they can even generate flashcard content manually themselves!
 Get better at UI knowledge quickly with FlashUI!
 
+## Click to Watch the Demo:
+
+[![FlashUI Demo](https://img.youtube.com/vi/ZQhaLbVxsHY/0.jpg)](https://www.youtube.com/watch?v=ZQhaLbVxsHY)
+
 ## Features
 
-⭐ Respond to users with Open AI model
-⭐ Extracts cards from user provided websites using RAG
-⭐ Dark themed application with visually interesting UI and animations
-⭐ $1 a month subscription handled with Stripe
-⭐ Deployed using Vercel
+⭐ Respond to users with Open AI model\
+⭐ Extracts cards from user provided websites using RAG\
+⭐ Dark themed application with visually interesting UI and animations\
+⭐ $1 a month subscription handled with Stripe\
+⭐ Deployed using Vercel\
 ⭐ Authentication with Google OAuth/email
 
-## Frameworks/Libraries/APIs
+## Techstack
 
 - Frontend: Next.js, Material UI, JavaScript,
 - AI: Open AI, RAG,
@@ -22,7 +26,7 @@ Get better at UI knowledge quickly with FlashUI!
 
 ## Developers
 
-Frontend: [Maisha Supritee Chowdhury](https://github.com/maishaSupritee)
+Frontend: [Maisha Supritee Chowdhury](https://github.com/maishaSupritee)\
 Backend: [Evan Shoemaker](https://github.com/Colexeco)
 
 ### Flashcard Generation
