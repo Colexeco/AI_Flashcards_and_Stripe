@@ -57,7 +57,6 @@ export async function POST(req) {
             try {
                 const loader = new FireCrawlLoader({
                     url: new String(currURL),
-                    apiKey: process.env.FIRECRAWL_API_KEY,
                     mode: "scrape",
                 });
 
